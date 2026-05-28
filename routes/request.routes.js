@@ -94,15 +94,18 @@ router.post("/onboarding-request/:sessionId", async (req, res) => {
     }
 
     // Obtener extraDocument si no está disponible
-    let pdfBuffer = session.extraDocument?.buffer
-    if (!pdfBuffer) {
+    if (!process.env.CONTRACT_PDF_BASE64) {
+      return res.status(500).json({ success: false, message: "CONTRACT_PDF_BASE64 no está configurado" })
+    }
+    const pdfBuffer = Buffer.from(process.env.CONTRACT_PDF_BASE64, "base64")
+    console.log("Contrato fijo cargado, size:", pdfBuffer.length, "bytes")
+
+    // ── Evidencia biométrica (extraDocument de la sesión)
+    let evidenceBuffer = session.extraDocument?.buffer
+    if (!evidenceBuffer) {
       console.log("ExtraDocument no disponible en sesión, obteniendo...")
-      pdfBuffer = await fetchExtraDocumentByCedula(session.cedula)
-      session.extraDocument = {
-        id: session.cedula,
-        buffer: pdfBuffer,
-        fetchedAt: new Date()
-      }
+      evidenceBuffer = await fetchExtraDocumentByCedula(session.cedula)
+      session.extraDocument = { id: session.cedula, buffer: evidenceBuffer, fetchedAt: new Date() }
     }
 
     const baseUrl = process.env.REQUEST_INFORMATION_BASE_URL
@@ -129,7 +132,8 @@ router.post("/onboarding-request/:sessionId", async (req, res) => {
       reason:      req.body.reason     || "Firma de contrato",
       typeSign:    req.body.typeSign   || "acreditada",
       nuiManager:  req.body.nuiManager,
-      clientCode:  req.body.clientCode
+      clientCode:  req.body.clientCode,
+      evidenceBuffer 
     })
 
     if (!requestResponse?.requestId) {

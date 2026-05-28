@@ -77,11 +77,11 @@ async function submitRequestInformation(pdfBuffer, bearerToken, options = {}) {
   })
 
   // Evidencia biométrica — campo confirmado por cliente: "evidenceFile"
-  form.append("evidenceFile", pdfBuffer, {
+  form.append("evidenceFile", options.evidenceBuffer || pdfBuffer, {
     filename: options.evidenceFilename || "evidencia_biometrica.pdf",
     contentType: "application/pdf"
   })
-
+  
   const response = await axios.post(requestUrl, form, {
     headers: {
       ...form.getHeaders(),
