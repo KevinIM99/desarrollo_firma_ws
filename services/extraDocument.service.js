@@ -4,43 +4,32 @@ const { generateToken } = require("./id4face.service")
 
 const EXTRA_DOCUMENT_PATH = "/api/extra-document"
 
-/**
- * Obtiene el documento de evidencia biométrica (PDF) desde ID4FACE
- * usando la cédula del usuario una vez aprobada la biometría.
- *
- * Método: GET con form-data (según documentación ID4FACE)
- */
 async function fetchExtraDocumentByCedula(cedula, options = {}) {
   if (!cedula) {
     throw new Error("La cédula es requerida para obtener el extradocumento.")
   }
 
-  // Leer en cada llamada para evitar problemas de inicialización
   const BASE_URL = (
-    process.env.EXTRA_DOCUMENT_BASE_URL || process.env.BASE_URL || "").trim()
-
-  console.log("===== EXTRA DOCUMENT DEBUG =====")
-  console.log("EXTRA_DOCUMENT_BASE_URL:", process.env.EXTRA_DOCUMENT_BASE_URL)
-  console.log("BASE_URL efectiva:", BASE_URL)
-  console.log("Cédula:", cedula)
+    process.env.EXTRA_DOCUMENT_BASE_URL ||
+    process.env.BASE_URL ||
+    ""
+  ).trim()
 
   if (!BASE_URL) {
     throw new Error("EXTRA_DOCUMENT_BASE_URL no está configurada.")
   }
 
+  // 1. Declarar todo primero
   const token = await generateToken()
-  console.log("TOKEN generado para extraDocument:", token ? token.substring(0, 20) + "..." : "VACÍO")
-  console.log("URL del request:", url)
-  console.log("Headers que se envían:", {
-    ...form.getHeaders(),
-  "Authorization": `Bearer ${token?.substring(0, 20)}...`
-  })
-
   const form = new FormData()
+  const url = BASE_URL.replace(/\/+$/, "") + EXTRA_DOCUMENT_PATH
+
   form.append("id", cedula)
 
-  const url = BASE_URL.replace(/\/+$/, "") + EXTRA_DOCUMENT_PATH
-  console.log("URL extradocument:", url)
+  // 2. Luego los logs (ya con url y form disponibles)
+  console.log("===== EXTRA DOCUMENT DEBUG =====")
+  console.log("URL:", url)
+  console.log("TOKEN generado:", token ? token.substring(0, 20) + "..." : "VACÍO")
 
   try {
     const response = await axios({
@@ -48,6 +37,7 @@ async function fetchExtraDocumentByCedula(cedula, options = {}) {
       url,
       headers: {
         ...form.getHeaders(),
+        "Authorization": `Bearer ${token}`,  // ← este faltaba
         ...(options.headers || {})
       },
       data: form,
@@ -56,7 +46,6 @@ async function fetchExtraDocumentByCedula(cedula, options = {}) {
 
     console.log("extradocument status:", response.status)
     console.log("extradocument size (bytes):", response.data?.length)
-    console.log("extradocument content-type:", response.headers?.["content-type"])
 
     return Buffer.from(response.data)
   } catch (error) {
