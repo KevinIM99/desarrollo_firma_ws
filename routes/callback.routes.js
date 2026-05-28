@@ -9,11 +9,11 @@ const CALLBACK_TOKEN = process.env.CALLBACK_TOKEN
 // ─── Recibir resultado biométrico del componente id4face ─────────────────
 router.post("/callback", async (req, res) => {
   try {
-    const tokenHeader = req.get("x-callback-token")
+    //const tokenHeader = req.get("x-callback-token")
 
-    if (!CALLBACK_TOKEN || tokenHeader !== CALLBACK_TOKEN) {
-      return res.status(401).json({ success: false, message: "No autorizado" })
-    }
+    //if (!CALLBACK_TOKEN || tokenHeader !== CALLBACK_TOKEN) {
+      //return res.status(401).json({ success: false, message: "No autorizado" })
+    //}
 
     const { sessionId, result } = req.body
     const session = sessions[sessionId]
