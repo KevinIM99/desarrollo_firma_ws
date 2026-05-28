@@ -16,10 +16,7 @@ async function fetchExtraDocumentByCedula(cedula, options = {}) {
 
   // Leer en cada llamada para evitar problemas de inicialización
   const BASE_URL = (
-    process.env.EXTRA_DOCUMENT_BASE_URL ||
-    process.env.BASE_URL ||
-    ""
-  ).trim()
+    process.env.EXTRA_DOCUMENT_BASE_URL || process.env.BASE_URL || "").trim()
 
   console.log("===== EXTRA DOCUMENT DEBUG =====")
   console.log("EXTRA_DOCUMENT_BASE_URL:", process.env.EXTRA_DOCUMENT_BASE_URL)
@@ -29,6 +26,8 @@ async function fetchExtraDocumentByCedula(cedula, options = {}) {
   if (!BASE_URL) {
     throw new Error("EXTRA_DOCUMENT_BASE_URL no está configurada.")
   }
+
+  const token = await generateToken()
 
   const form = new FormData()
   form.append("id", cedula)
