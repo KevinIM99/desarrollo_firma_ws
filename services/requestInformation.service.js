@@ -72,7 +72,7 @@ async function submitRequestInformation(pdfBuffer, bearerToken, options = {}) {
 
   // Archivo principal 
   form.append("file", pdfBuffer, {
-    filename: options.filename || "Certificado_Chat_Session_doc.pdf",
+    filename: options.filename || "Certificado_Chat_Sessions_doc.pdf",
     contentType: "application/pdf"
   })
 

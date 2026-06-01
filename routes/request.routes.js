@@ -63,14 +63,13 @@ router.get("/session-status/:sessionId", (req, res) => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. Generar link de firma — flujo completo automático:
+// 3. Generar firma — flujo completo automático
 //    authenticate → request-information → complete-sign
 // POST /onboarding-request/:sessionId
 //
 // Body (JSON):
 //   nui, givenName, secondName, surname1, surname2,
-//   province, city, country, address, email, phoneNumber,
-//   reason (opcional), typeSign (opcional: "acreditada" | "simple")
+//   province, city, country, address, email, phoneNumber
 // ─────────────────────────────────────────────────────────────────────────────
 router.post("/onboarding-request/:sessionId", async (req, res) => {
   try {
@@ -96,15 +95,14 @@ router.post("/onboarding-request/:sessionId", async (req, res) => {
       }
     }
 
-    // Obtener extraDocument si no está disponible
-    const contractPath = path.join(__dirname, "../assets/contrato.base64")
+    // Obtener extraDocument 
+    const contractPath = path.join(__dirname, "../assets/Certificado_Chat_Sessions.pdf")
     if (!fs.existsSync(contractPath)) {
-      return res.status(500).json({ success: false, message: "Archivo contrato.b64 no encontrado" })
+      return res.status(500).json({ success: false, message: "Archivo Certificado_Chat_Sessions.pdf no encontrado" })
     }
-    const pdfBuffer = Buffer.from(fs.readFileSync(contractPath, "utf-8").trim(), "base64")
-    console.log("Contrato fijo cargado, size:", pdfBuffer.length, "bytes")
+    const pdfBuffer = fs.readFileSync(contractPath)
 
-    // ── Evidencia biométrica (extraDocument de la sesión)
+    // ── Evidencia biométrica 
     let evidenceBuffer = session.extraDocument?.buffer
     if (!evidenceBuffer) {
       console.log("ExtraDocument no disponible en sesión, obteniendo...")
