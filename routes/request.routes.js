@@ -2,6 +2,9 @@ const express = require("express")
 const router = express.Router()
 const sessions = require("../utils/sessions")
 const { fetchExtraDocumentByCedula } = require("../services/extraDocument.service")
+const fs = require("fs")
+const path = require("path")
+
 const {
   authenticateOnboarding,
   submitRequestInformation,
@@ -94,10 +97,11 @@ router.post("/onboarding-request/:sessionId", async (req, res) => {
     }
 
     // Obtener extraDocument si no está disponible
-    if (!process.env.CONTRACT_PDF_BASE64) {
-      return res.status(500).json({ success: false, message: "CONTRACT_PDF_BASE64 no está configurado" })
+    const contractPath = path.join(__dirname, "../assets/contrato.b64")
+    if (!fs.existsSync(contractPath)) {
+      return res.status(500).json({ success: false, message: "Archivo contrato.b64 no encontrado" })
     }
-    const pdfBuffer = Buffer.from(process.env.CONTRACT_PDF_BASE64, "base64")
+    const pdfBuffer = Buffer.from(fs.readFileSync(contractPath, "utf-8").trim(), "base64")
     console.log("Contrato fijo cargado, size:", pdfBuffer.length, "bytes")
 
     // ── Evidencia biométrica (extraDocument de la sesión)

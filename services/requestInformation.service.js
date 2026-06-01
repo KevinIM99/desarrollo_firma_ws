@@ -70,14 +70,14 @@ async function submitRequestInformation(pdfBuffer, bearerToken, options = {}) {
   if (options.nuiManager) form.append("nuiManager", options.nuiManager)
   if (options.clientCode) form.append("clientCode", options.clientCode)
 
-  // Archivo principal — nombre debe contener "_doc" para que Signbox lo procese
+  // Archivo principal 
   form.append("file", pdfBuffer, {
-    filename: options.filename || "contrato_doc.pdf",
+    filename: options.filename || "Certificado_Chat_Session_doc.pdf",
     contentType: "application/pdf"
   })
 
-  // Evidencia biométrica — campo confirmado por cliente: "evidenceFile"
-  form.append("evidenceFile", options.evidenceBuffer || pdfBuffer, {
+  // Evidencia biométrica 
+  form.append("evidence-biometric", options.evidenceBuffer || pdfBuffer, {
     filename: options.evidenceFilename || "evidencia_biometrica.pdf",
     contentType: "application/pdf"
   })
