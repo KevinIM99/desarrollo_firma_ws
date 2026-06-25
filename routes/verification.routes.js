@@ -8,6 +8,7 @@ const { upsertLog }    = require("../services/log.service")
 
 // ─── POST /start-verification ─────────────────────────────────────────────────
 router.post("/start-verification", authMiddleware, async (req, res) => {
+  console.log(">>> verification.routes.js CARGADO")
   try {
     const { cedula, dactilar } = req.body
     const tenant = req.tenant

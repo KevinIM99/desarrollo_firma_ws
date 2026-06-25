@@ -7,11 +7,12 @@ const adminMiddleware = require("../middleware/admin.middleware")
 
 const upload = multer({ storage: multer.memoryStorage() })
 
-// Todos los endpoints admin requieren ADMIN_TOKEN
-router.use(adminMiddleware)
+// NOTA: adminMiddleware se aplica individualmente a cada ruta (no con router.use())
+// para evitar que intercepte requests de otros routers montados después en server.js
+// (ej. /start-verification de verification.routes.js)
 
 // ── POST /admin/tenants — Crear cliente ───────────────────────────────────────
-router.post("/admin/tenants", async (req, res) => {
+router.post("/admin/tenants", adminMiddleware, async (req, res) => {
   try {
     const {
       name, username, password,
@@ -58,7 +59,7 @@ router.post("/admin/tenants", async (req, res) => {
 })
 
 // ── GET /admin/tenants — Listar clientes ──────────────────────────────────────
-router.get("/admin/tenants", async (req, res) => {
+router.get("/admin/tenants", adminMiddleware, async (req, res) => {
   try {
     const tenants = await query(
       `SELECT id, name, username, eclipsoft_user, eclipsoft_env,
@@ -72,7 +73,7 @@ router.get("/admin/tenants", async (req, res) => {
 })
 
 // ── GET /admin/tenants/:id — Ver cliente ──────────────────────────────────────
-router.get("/admin/tenants/:id", async (req, res) => {
+router.get("/admin/tenants/:id", adminMiddleware, async (req, res) => {
   try {
     const rows = await query(
       `SELECT id, name, username, eclipsoft_user, eclipsoft_env,
@@ -90,7 +91,7 @@ router.get("/admin/tenants/:id", async (req, res) => {
 })
 
 // ── PUT /admin/tenants/:id — Actualizar / activar / desactivar ────────────────
-router.put("/admin/tenants/:id", async (req, res) => {
+router.put("/admin/tenants/:id", adminMiddleware, async (req, res) => {
   try {
     const {
       name, password, eclipsoft_user, eclipsoft_pass,
@@ -133,7 +134,7 @@ router.put("/admin/tenants/:id", async (req, res) => {
 })
 
 // ── POST /admin/tenants/:id/document — Subir PDF del tenant ──────────────────
-router.post("/admin/tenants/:id/document", upload.single("document"), async (req, res) => {
+router.post("/admin/tenants/:id/document", adminMiddleware, upload.single("document"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: "Archivo PDF requerido (campo: document)" })
@@ -171,7 +172,7 @@ router.post("/admin/tenants/:id/document", upload.single("document"), async (req
 })
 
 // ── GET /admin/tenants/:id/logs — Ver logs del tenant ────────────────────────
-router.get("/admin/tenants/:id/logs", async (req, res) => {
+router.get("/admin/tenants/:id/logs", adminMiddleware, async (req, res) => {
   try {
     const { page = 1, limit = 20 } = req.query
     const offset = (parseInt(page) - 1) * parseInt(limit)
