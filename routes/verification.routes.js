@@ -66,7 +66,7 @@ router.get("/verify/:sessionId", async (req, res) => {
 
     if (!session) return res.status(404).send("Sesión no encontrada o expirada")
 
-    const LOGO_BASE64 = process.env.LOGO_BASE64 || ""
+    const LOGO_BASE64 = session.tenantData?.logo_base64 || process.env.LOGO_BASE64 || ""
 
     const html = `<!DOCTYPE html>
 <html lang="es">

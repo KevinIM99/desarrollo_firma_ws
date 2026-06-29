@@ -2,8 +2,8 @@ const jwt   = require("jsonwebtoken")
 const { query } = require("../services/db.service")
 
 async function authMiddleware(req, res, next) {
-  console.log(">>> ADMIN MIDDLEWARE EJECUTADO para:", req.method, req.originalUrl)
-  console.trace(">>> STACK TRACE")
+  //console.log(">>> ADMIN MIDDLEWARE EJECUTADO para:", req.method, req.originalUrl)
+  //console.trace(">>> STACK TRACE")
   try {
     const authHeader = req.headers["authorization"]
     if (!authHeader || !authHeader.startsWith("Bearer ")) {

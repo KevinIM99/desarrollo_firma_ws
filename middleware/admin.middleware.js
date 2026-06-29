@@ -1,6 +1,6 @@
 function adminMiddleware(req, res, next) {
-  console.log(">>> ADMIN MIDDLEWARE EJECUTADO para:", req.method, req.originalUrl)
-  console.trace(">>> STACK TRACE")
+  //console.log(">>> ADMIN MIDDLEWARE EJECUTADO para:", req.method, req.originalUrl)
+  //console.trace(">>> STACK TRACE")
   const authHeader = req.headers["authorization"]
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ success: false, message: "Token admin requerido" })
